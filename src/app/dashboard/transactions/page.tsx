@@ -2,14 +2,16 @@
 'use client';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RootState } from '@/redux/store';
-import { addExpense } from '@/redux/features/expensesSlice';
+import { addExpense, getExpense } from '@/redux/features/expensesSlice';
 import { getMonthDays, getFormatedDate } from '@/lib/utils';
 import MonthYearPicker from './components/MonthYearPicker';
 import Calendar from './components/Calender';
 import ExpenseModal from './components/ExpenseModal';
 import CalendarHeader from './components/CalenderHeader';
+import axiosInstance from '@/DBConnect/axiosInstance';
+import { Expense } from '@/models/ExpenseModel';
 
 export default function TransactionsPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -22,14 +24,15 @@ export default function TransactionsPage() {
     
   };
 
+ 
+
   const handleCloseModal = () => {
     setSelectedDate(null);
   };
 
   const handleAddExpense = (expense: any) => {
     const dateKey = getFormatedDate(selectedDate)  ?? '';
-    console.log(selectedDate, ">>>>>>>")
-    console.log(dateKey,"?????")
+    
     dispatch(addExpense({ ...expense, date: dateKey }));
     handleCloseModal();
   };

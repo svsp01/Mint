@@ -1,14 +1,14 @@
-'use client'
+'use client';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import YearMonthSelector from '@/ui/reusableComponents/YearMonthSelector';
 import PlannerHeader from './components/PlannerHeader';
 import MonthPlan from './components/MonthPlan';
-import { RootState } from '@/redux/store';
-import { setCurrentDate, initializeMonthData } from '@/redux/features/plannerSlice';
+import { AppDispatch, RootState } from '@/redux/store';
+import { setCurrentDate, initializeMonthData, fetchPlannerData } from '@/redux/features/plannerSlice';
 
 const Page: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const { currentYear, currentMonth, years } = useSelector((state: RootState) => state.planner);
 
   const handleSelect = (year: number, month: number) => {
@@ -16,6 +16,9 @@ const Page: React.FC = () => {
     dispatch(initializeMonthData({ year, month }));
   };
 
+  useEffect(() => {
+    dispatch(fetchPlannerData());
+  }, [dispatch]);
   useEffect(() => {
     dispatch(initializeMonthData({ year: currentYear, month: currentMonth }));
   }, [dispatch, currentYear, currentMonth]);

@@ -1,41 +1,61 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { useDispatch } from 'react-redux';
-import { login, signup } from '@/redux/features/userSlice';
+import { logingin, signingup } from '@/redux/features/userSlice';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 const AuthPage: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    phoneNumber: '',
+    monthlyIncome: '',
+    profileImageUrl: '',
+    bio: '',
+    skills: '',
+    interests: ''
+  });
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    dispatch(login({
-      email: formData.get('email') as string,
-      password: formData.get('password') as string,
-    }));
-    router.push('/dashboard');
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevFormData => ({ ...prevFormData, [name]: value }));
   };
 
-  const handleSignup = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    dispatch(signup({
-      username: formData.get('username') as string,
-      email: formData.get('email') as string,
-      firstName: formData.get('firstName') as string,
-      lastName: formData.get('lastName') as string,
-      password: formData.get('password') as string,
-      phoneNumber: formData.get('phoneNumber') as string,
-      monthlyIncome: Number(formData.get('monthlyIncome')),
-      profileImageUrl: formData.get('profileImageUrl') as string,
-      bio: formData.get('bio') as string,
-    }));
-    router.push('/dashboard');
+    dispatch(logingin({
+      email: formData.email,
+      password: formData.password,
+    })).then(() => {
+      router.push('/dashboard');
+    });
+  };
+
+  const handleSignup = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    dispatch(signingup({
+      username: formData.username,
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      password: formData.password,
+      phoneNumber: formData.phoneNumber,
+      monthlyIncome: Number(formData.monthlyIncome),
+      profileImageUrl: formData.profileImageUrl,
+      bio: formData.bio,
+      skills: formData.skills,
+      interests: formData.interests,
+    })).then(() => {
+      router.push('/dashboard');
+    });
   };
 
   const renderLoginForm = () => (
@@ -50,6 +70,8 @@ const AuthPage: React.FC = () => {
         <input
           type="email"
           name="email"
+          value={formData.email}
+          onChange={handleChange}
           placeholder="Email"
           required
           className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -60,6 +82,8 @@ const AuthPage: React.FC = () => {
         <input
           type="password"
           name="password"
+          value={formData.password}
+          onChange={handleChange}
           placeholder="Password"
           required
           className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -88,6 +112,8 @@ const AuthPage: React.FC = () => {
           <input
             type="text"
             name="username"
+            value={formData.username}
+            onChange={handleChange}
             placeholder="Username"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -95,6 +121,8 @@ const AuthPage: React.FC = () => {
           <input
             type="email"
             name="email"
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Email"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -102,6 +130,8 @@ const AuthPage: React.FC = () => {
           <input
             type="password"
             name="password"
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Password"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -113,6 +143,8 @@ const AuthPage: React.FC = () => {
           <input
             type="text"
             name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
             placeholder="First Name"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -120,6 +152,8 @@ const AuthPage: React.FC = () => {
           <input
             type="text"
             name="lastName"
+            value={formData.lastName}
+            onChange={handleChange}
             placeholder="Last Name"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -127,6 +161,8 @@ const AuthPage: React.FC = () => {
           <input
             type="tel"
             name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
             placeholder="Phone Number"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -138,6 +174,8 @@ const AuthPage: React.FC = () => {
           <input
             type="number"
             name="monthlyIncome"
+            value={formData.monthlyIncome}
+            onChange={handleChange}
             placeholder="Monthly Income"
             required
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
@@ -145,14 +183,34 @@ const AuthPage: React.FC = () => {
           <input
             type="url"
             name="profileImageUrl"
+            value={formData.profileImageUrl}
+            onChange={handleChange}
             placeholder="Profile Image URL"
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           />
           <textarea
             name="bio"
+            value={formData.bio}
+            onChange={handleChange}
             placeholder="Short bio"
             className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           ></textarea>
+          <input
+            type="text"
+            name="skills"
+            value={formData.skills}
+            onChange={handleChange}
+            placeholder="Skills"
+            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          />
+          <input
+            type="text"
+            name="interests"
+            value={formData.interests}
+            onChange={handleChange}
+            placeholder="Interests"
+            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          />
         </>
       )}
       {step < 3 ? (

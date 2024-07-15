@@ -1,4 +1,5 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
 interface MonthData {
   income: number;
@@ -16,6 +17,8 @@ interface PlannerState {
   };
   currentYear: number;
   currentMonth: number;
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
+  error: string | null;
 }
 
 interface WeekPlan {
@@ -23,14 +26,37 @@ interface WeekPlan {
   startDate: Date;
   endDate: Date;
   budget: number;
-  expenses: { [key: string]: { emoji: string, value: number }[] };
+  expenses: { [key: string]: { emoji: string; value: number }[] };
 }
 
 const initialState: PlannerState = {
   years: {},
   currentYear: new Date().getFullYear(),
   currentMonth: new Date().getMonth() + 1,
+  status: 'idle',
+  error: null,
 };
+
+export const fetchPlannerData = createAsyncThunk('planner/fetchPlannerData', async () => {
+  try {
+    const response = await axios.get('/api/planner');
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch planner data');
+  }
+});
+
+export const updatePlannerData = createAsyncThunk(
+  'planner/updatePlannerData',
+  async ({ year, month, income, savings, weekPlans }: { year: number; month: number; income?: number; savings?: number; weekPlans?: WeekPlan[] }) => {
+    try {
+      const response = await axios.post('/api/planner', { year, month, income, savings, weekPlans });
+      return response.data;
+    } catch (error) {
+      throw new Error('Failed to update planner data');
+    }
+  }
+);
 
 const plannerSlice = createSlice({
   name: 'planner',
@@ -76,7 +102,33 @@ const plannerSlice = createSlice({
       if (state.years[year] && state.years[year][month] && state.years[year][month].weekPlans[weekIndex]) {
         state.years[year][month].weekPlans[weekIndex] = updatedWeek;
       }
+      
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchPlannerData.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchPlannerData.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.years = action.payload;
+      })
+      .addCase(fetchPlannerData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message ?? 'Failed to fetch planner data';
+      })
+      .addCase(updatePlannerData.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updatePlannerData.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // You may handle state updates after a successful update if needed
+      })
+      .addCase(updatePlannerData.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message ?? 'Failed to update planner data';
+      });
   },
 });
 

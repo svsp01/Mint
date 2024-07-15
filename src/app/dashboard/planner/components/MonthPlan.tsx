@@ -2,7 +2,7 @@ import EmojiModal from '@/ui/reusableComponents/EmojiModal';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '@/redux/store';
-import { initializeMonthData, setIncome, setSavings, setWeekPlans, updateWeekPlan } from '@/redux/features/plannerSlice';
+import { initializeMonthData, setIncome, setSavings, setWeekPlans, updatePlannerData, updateWeekPlan } from '@/redux/features/plannerSlice';
 
 interface Expense {
   emoji: string;
@@ -61,6 +61,7 @@ const MonthPlan: React.FC = () => {
         expenses: {},
       }));
       dispatch(setWeekPlans({ year: currentYear, month: currentMonth, weekPlans: newWeekPlans }));
+      dispatch(updatePlannerData({ year: currentYear, month: currentMonth, weekPlans: newWeekPlans }))
     }
   }, [currentYear, currentMonth, income, dispatch, getWeeksInMonth]);
 
@@ -92,6 +93,7 @@ const MonthPlan: React.FC = () => {
       },
     };
     dispatch(updateWeekPlan({ year: currentYear, month: currentMonth, weekIndex: currentWeekIndex, updatedWeek }));
+
   }, [weekPlans, currentWeekIndex, currentYear, currentMonth, dispatch]);
 
   const handleCategoryClick = useCallback((category: string) => {
@@ -112,6 +114,7 @@ const MonthPlan: React.FC = () => {
         },
       };
       dispatch(updateWeekPlan({ year: currentYear, month: currentMonth, weekIndex: currentWeekIndex, updatedWeek }));
+
     }
     setModalVisible(false);
     setSelectedCategory(null);
