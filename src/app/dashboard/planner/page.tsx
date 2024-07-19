@@ -18,12 +18,12 @@ const Page: React.FC = () => {
 
   useEffect(() => {
     dispatch(fetchPlannerData());
+    
   }, [dispatch]);
+
   useEffect(() => {
     dispatch(initializeMonthData({ year: currentYear, month: currentMonth }));
   }, [dispatch, currentYear, currentMonth]);
-
-  const currentMonthData = years[currentYear]?.[currentMonth] || { income: 0, savings: 0, weekPlans: [] };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
@@ -35,7 +35,8 @@ const Page: React.FC = () => {
 
       <div className="" style={{ animationDelay: '0.6s' }}>
         <MonthPlan
-          
+          year={currentYear}
+          month={currentMonth}
         />
       </div>
     </div>

@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
             const token = sign({ userId: user._id,  email: user.email, username:user.name }, `${process.env.JWT_SECRET}`, {
               expiresIn: '1h', 
             });
-            return NextResponse.json({ message: 'Login successful', data: { userId: user._id,  email: user.email, username:user.name,token: token } });
+            return NextResponse.json({ message: 'Login successful', data: { userId: user._id, profileImageUrl:user?.profileImageUrl,monthlyIncome:user?.monthlyIncome,  email: user.email, username:user.name,token: token } });
       
           }
     } catch (error) {

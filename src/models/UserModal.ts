@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema({
   username: String,
@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
   monthlyIncome: Number,
   profileImageUrl: String,
   bio: String,
+  budgets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Budget' }]  // Reference to Budget model
 });
 
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+export default mongoose.models.User || mongoose.model('User', UserSchema);

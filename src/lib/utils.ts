@@ -111,3 +111,16 @@ export function getFormatedDate(date: any): string {
 
   return `${year}-${month}-${firstDay}`;
 }
+
+
+export function getUserData() {
+  const username = localStorage.getItem('username');
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+
+  if (!username || !userId || !token) {
+    throw new Error('User data not found in local storage');
+  }
+
+  return { username, userId, token };
+}

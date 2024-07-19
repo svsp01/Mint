@@ -1,48 +1,22 @@
-import mongoose, { Schema, Document } from 'mongoose';
-export interface WeekPlan {
-    id: number;
-    startDate: Date;
-    endDate: Date;
-    budget: number;
-    expenses: { emoji: string; value: number }[];
-  }
-  
-export interface Planner extends Document {
-  years: {
-    [year: number]: {
-      [month: number]: {
-        income: number;
-        savings: number;
-        weekPlans: WeekPlan[];
-      };
-    };
-  };
-}
+// models/PlannerModel.ts
 
-const WeekPlanSchema = new Schema({
-  id: Number,
-  startDate: Date,
-  endDate: Date,
-  budget: Number,
-  expenses: {
-    type: Map,
-    of: [{ emoji: String, value: Number }],
-  },
-});
+import mongoose from 'mongoose';
 
-const PlannerSchema = new Schema({
-  
+const PlannerSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   years: {
     type: Map,
     of: {
       type: Map,
       of: {
-        income: Number,
-        savings: Number,
-        weekPlans: [WeekPlanSchema],
-      },
-    },
-  },
+        income: { type: Number, default: 0 },
+        savings: { type: Number, default: 0 },
+        weekPlans: [{ type: mongoose.Schema.Types.ObjectId, ref: 'WeekPlan' }]
+      }
+    }
+  }
 });
 
-export default mongoose.models.Planner || mongoose.model<Planner>('Planner', PlannerSchema);
+const PlannerModel = mongoose.models.Planner || mongoose.model('Planner', PlannerSchema);
+
+export default PlannerModel;
